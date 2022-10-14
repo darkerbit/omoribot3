@@ -3,6 +3,7 @@ from discord.ext import commands
 from PIL import Image
 
 import os
+import requests
 
 from omoribot import *
 
@@ -22,13 +23,35 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='?', intents=intents)
 
 
-@bot.command()
-async def portrait(ctx: commands.Context, portrait_name: str):
+async def download_attachment(ctx: commands.Context):
+    folder = f"downloads/{ctx.author.id}/"
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    if len(ctx.message.attachments) < 1:
+        await ctx.reply("you forgor attachment")
+        return
+
+    attachment = ctx.message.attachments.pop()
+
+    path = f"{folder}{attachment.filename}"
+
+    with open(path, "wb") as o:
+        r = requests.get(attachment.url)
+
+        for chunk in r.iter_content(8192):
+            o.write(chunk)
+
+    return path
+
+
+async def resolve_portrait(ctx: commands.Context, portrait_name: str):
+    if portrait_name == "attached":
+        return await download_attachment(ctx)
+
     safe = os.path.abspath("portraits/")
     portr = os.path.abspath(f"portraits/{portrait_name}.png")
-
-    await ctx.send(portr)
-    await ctx.send(os.path.commonpath([safe, portr]))
 
     if os.path.commonpath([safe, portr]) != safe:
         await ctx.reply("Can't load portraits from outside the portraits folder!")
@@ -36,6 +59,21 @@ async def portrait(ctx: commands.Context, portrait_name: str):
 
     if not os.path.exists(portr):
         await ctx.reply("No such portrait!")
+        return
+
+    return portr
+
+
+@bot.command()
+async def portrait(ctx: commands.Context, portrait_name: str):
+    portr = ""
+
+    if portrait_name != "attached":
+        portr = await resolve_portrait(ctx, portrait_name)
+    else:
+        portr = await download_attachment(ctx)
+
+    if portr is None:
         return
 
     tree = Box(Portrait(portr))
@@ -54,6 +92,9 @@ async def where_the_fuck_am_i(ctx: commands.Context):
 if __name__ == '__main__':
     if not os.path.exists("out/"):
         os.makedirs("out/")
+
+    if not os.path.exists("downloads/"):
+        os.makedirs("downloads/")
 
     with open("token", "r") as f:
         token = f.read().strip()

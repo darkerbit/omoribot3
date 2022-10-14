@@ -24,7 +24,7 @@ class Portrait(Widget):
     def __init__(self, portrait, crop=True, **kwargs):
         super().__init__(**kwargs)
 
-        self.portrait = Image.open(portrait)
+        self.portrait = Image.open(portrait).resize((106, 106))
 
         if crop:
             self.portrait = self.portrait.crop((1, 0, self.portrait.size[0] - 1, self.portrait.size[1] - 2))
