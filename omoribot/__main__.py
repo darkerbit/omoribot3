@@ -23,8 +23,8 @@ bot = commands.Bot(command_prefix='?', intents=intents)
 
 
 @bot.command()
-async def test(ctx: commands.Context):
-    tree = FixedSize(200, 200, Box(FilledRect(128, 64, (255, 0, 0)), horizontal=-1, vertical=-1))
+async def portrait(ctx: commands.Context, portrait: str):
+    tree = Box(Portrait(f"portraits/{portrait}.png"))
 
     path = f"out/{ctx.author.id}.png"
     render(tree, path)
