@@ -24,12 +24,7 @@ bot = commands.Bot(command_prefix='?', intents=intents)
 
 @bot.command()
 async def test(ctx: commands.Context):
-    tree = FixedSize(640, 480, Layer(
-        FilledRect(0, 0, (255, 0, 0, 255)),
-        FilledRect(128, 128, (0, 255, 0, 255), horizontal=-1),
-        FilledRect(64, 128, (0, 0, 255), horizontal=1, vertical=-1),
-        FilledRect(128, 64, (255, 0, 255), horizontal=1, vertical=1)
-    ))
+    tree = FixedSize(200, 200, Box(FilledRect(128, 64, (255, 0, 0)), horizontal=-1, vertical=-1))
 
     path = f"out/{ctx.author.id}.png"
     render(tree, path)

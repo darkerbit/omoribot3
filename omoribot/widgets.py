@@ -17,4 +17,4 @@ class FilledRect(Widget):
     def _render(self, x: int, y: int, w: int, h: int, image: Image):
         draw = ImageDraw.Draw(image)
 
-        draw.rectangle((x, y, x+w, y+h), fill=self.fill)
+        draw.rectangle((x, y, x+w-1, y+h-1), fill=self.fill)
