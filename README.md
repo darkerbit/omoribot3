@@ -7,7 +7,7 @@ A discord bot for creating OMORI-styled text boxes.
 1. Place bot token into `token` next to `main.py`. (Message content intent required)
 2. Place dialogue portraits into `portraits/`. (Any image format supported by Pillow works)
 3. `pip3 install pipenv` (or `sudo dnf install pipenv` on Fedora)
-4. `pipenv run python3 main.py`
+4. `pipenv run python3 omoribot`
 
 ### How do use?
 
