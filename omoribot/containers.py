@@ -106,7 +106,7 @@ class HFlow(Widget):
         self.can_newline = can_newline
 
     def anim_done(self) -> bool:
-        return all(c.anim_done for line in self.lines for c in line)
+        return all(c.anim_done() for line in self.lines for c in line)
 
     def _get_size(self) -> tuple[int, int]:
         w = 0

@@ -1,5 +1,9 @@
+import math
+
 from .layout import *
 from .containers import HFlow
+
+import random
 
 from PIL import ImageFont, ImageDraw, ImageColor
 
@@ -72,6 +76,47 @@ class TextElement(Widget):
         draw.text((x, y), self.text, font=self.font, anchor="la", fill=self.color)
 
 
+class SpecialTextElement(TextElement):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.i = 0
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        cx = x
+
+        for c in self.text:
+            self._render_char(c, cx, y, w, h, image, dbg)
+            cx += self.font.getbbox(c, anchor="la")[2]
+
+        self.i += 1
+
+    def _render_char(self, c, x: int, y: int, w: int, h: int, image: Image, dbg):
+        raise NotImplementedError
+
+
+class Shivering(SpecialTextElement):
+    def anim_done(self) -> bool:
+        return self.i >= 8
+
+    def _render_char(self, c, x: int, y: int, w: int, h: int, image: Image, dbg):
+        draw = ImageDraw.Draw(image, "RGBA")
+
+        draw.text((x + random.randint(-1, 2), y + random.randint(-1, 2)), c, font=self.font, anchor="la", fill=self.color)
+
+
+class Wobbly(SpecialTextElement):
+    def anim_done(self) -> bool:
+        return self.i % 30 == 0
+
+    def _render_char(self, c, x: int, y: int, w: int, h: int, image: Image, dbg):
+        draw = ImageDraw.Draw(image, "RGBA")
+
+        dist = 8
+
+        draw.text((x, int(y + dist / 2 + math.sin((float(self.i) / 30 + float(x) / 200) * 2 * math.pi) * float(dist) / 2)), c, font=self.font, anchor="la", fill=self.color)
+
+
 class TextParser:
     class Settings:
         def __init__(self):
@@ -136,6 +181,12 @@ class TextParser:
                         self.settings.size = int(setting[1])
                     elif setting[0] == "color" or setting[0] == "colour":
                         self.settings.color = ImageColor.getcolor(setting[1], "RGBA")
+                    elif setting[0] == "normal" or setting[0] == "reset":
+                        self.settings.clazz = TextElement
+                    elif setting[0] == "shiver" or setting[0] == "shivering":
+                        self.settings.clazz = Shivering
+                    elif setting[0] == "wobble" or setting[0] == "wobbly":
+                        self.settings.clazz = Wobbly
             else:
                 element += c
 
@@ -146,11 +197,13 @@ class TextParser:
 
         return lines
 
-    def make_text(self, text, **kwargs):
+    def make_text(self, text, is_space=False, **kwargs):
         if text == "":
-            return self.settings.clazz(text, self.settings.font, self.settings.color, self.settings.size, is_space=True, **kwargs)
+            return TextElement(text, self.settings.font, self.settings.color, self.settings.size, is_space=True, **kwargs)
 
-        return self.settings.clazz(text, self.settings.font, self.settings.color, self.settings.size, **kwargs)
+        clazz = TextElement if is_space else self.settings.clazz
+
+        return clazz(text, self.settings.font, self.settings.color, self.settings.size, is_space=is_space, **kwargs)
 
     def push_settings(self):
         self.stack.append(self.settings.copy())
