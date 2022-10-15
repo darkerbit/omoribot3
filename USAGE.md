@@ -7,7 +7,9 @@ The basic syntax for omoribot is as follows:
 `?tb <name> <portrait> <text...>`
 
 Name is the name of the character which will be displayed in it's own box, or you can type `none` to not have a name box.
+
 Portrait is the character portrait that will be displayed, you can find all of the inbuilt portraits in the Portrait Lists channels, and you can provide your own with `attached`, or you can leave the portrait box out with `none`.
+
 Text is the text that will be displayed in the main dialogue box.
 
 ## FORMAT TAGS
@@ -17,12 +19,12 @@ In order to format the dialogue, you can use Format Tags.
 Format Tags always come in pairs; first is the tag itself (for example: `[shiver]`) and then there will be a matching `[/]`. Everything in between will be formatted.
 
 Available formatting tags:
-`[size=<size>]` Sets the text size.
-`[font=<font>]` Sets the font. List of available fonts will be further down.
-`[color=<color>]` or `[colour=<colour>]` Sets the colour. Accepts basically every format ever, be it html colours `gold` or hex codes `#FFD200`. ("colour" is an alias because I spell it that way)
-`[shiver]` or `[shivering]` Makes the text shiver.
-`[wobbly]` or `[wobbling]` Makes the text wobble.
-`[normal]` or `[reset]` Returns the text to normal, though in most cases you probably shouldn't need to use this when you can just instead end the previous tag with `[/]`.
+- `[size=<size>]` Sets the text size.
+- `[font=<font>]` Sets the font. List of available fonts will be further down.
+- `[color=<color>]` or `[colour=<colour>]` Sets the colour. Accepts basically every format ever, be it html colours `gold` or hex codes `#FFD200`. ("colour" is an alias because I spell it that way)
+- `[shiver]` or `[shivering]` Makes the text shiver.
+- `[wobbly]` or `[wobbling]` Makes the text wobble.
+- `[normal]` or `[reset]` Returns the text to normal, though in most cases you probably shouldn't need to use this when you can just instead end the previous tag with `[/]`.
 
 While this isn't technically a formatting tag, you can place `->` at the end of your message to create the animated cursor that appears in the in-game text boxes.
 
