@@ -11,7 +11,7 @@ A discord bot for creating OMORI-styled text boxes.
 
 ### How do use?
 
-TODO
+Read the [Usage guide](USAGE.md) to learn how to use OMORIBOT.
 
 ### Why is it #3?
 
