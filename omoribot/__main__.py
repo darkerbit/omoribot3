@@ -123,16 +123,21 @@ async def where_the_fuck_am_i(ctx: commands.Context):
 
 @bot.command(aliases=["tb"])
 async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
-    portr = await resolve_portrait(ctx, portrait_name)
+    layer = Layer()
 
-    if portr is None:
-        return
+    if name != "none":
+        layer.add_child(Box(Margin(Text(name, can_newline=False), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1))
+
+    if portrait_name != "none":
+        portr = await resolve_portrait(ctx, portrait_name)
+
+        if portr is None:
+            return
+
+        layer.add_child(Box(Portrait(portr), horizontal=1, vertical=1))
 
     tree = VStack(
-        Layer(
-            Box(Margin(Text(name), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1),
-            Box(Portrait(portr), horizontal=1, vertical=1)
-        ),
+        layer,
         FixedSize(608, 112, Box(Margin(Text(message), top=6, left=12, right=12)))
     )
 

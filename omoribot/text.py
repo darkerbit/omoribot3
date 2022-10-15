@@ -181,10 +181,10 @@ class TextParser:
 
 
 class Text(Widget):
-    def __init__(self, text, **kwargs):
+    def __init__(self, text, can_newline=True, **kwargs):
         super().__init__(**kwargs)
 
-        self.flow = HFlow(TextParser(text).parse(), pad_x=0, pad_y=0)
+        self.flow = HFlow(TextParser(text).parse(), pad_x=0, pad_y=0, can_newline=can_newline)
 
     def anim_done(self) -> bool:
         return self.flow.anim_done()

@@ -96,12 +96,14 @@ class VStack(Container):
 
 
 class HFlow(Widget):
-    def __init__(self, lines: list[list[Widget]], pad_x: int = 4, pad_y: int = 4, **kwargs):
+    def __init__(self, lines: list[list[Widget]], pad_x: int = 4, pad_y: int = 4, can_newline=True, **kwargs):
         super().__init__(**kwargs)
 
         self.lines = lines
         self.pad_x = pad_x
         self.pad_y = pad_y
+
+        self.can_newline = can_newline
 
     def anim_done(self) -> bool:
         return all(c.anim_done for line in self.lines for c in line)
@@ -137,7 +139,7 @@ class HFlow(Widget):
             for c in line:
                 cw, ch = c.get_size()
 
-                if rx + cw >= w:
+                if rx + cw >= w and self.can_newline:
                     rx = x
                     ry += lh + self.pad_y
                     lh = 0
