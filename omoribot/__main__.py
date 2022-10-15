@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
-from PIL import Image
 
 import os
 import shutil
 import requests
 import subprocess
+import random
 
 from omoribot import *
 
@@ -130,12 +130,10 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, text:
 
     tree = VStack(
         Layer(
-            Box(FilledRect(61, 34, (255, 0, 0, 255)), horizontal=-1, vertical=1),
+            Box(Blank(), horizontal=-1, vertical=1),
             Box(Portrait(portr), horizontal=1, vertical=1)
         ),
-        FixedSize(608, 112, Box(
-            VStack(HStack(FilledRect(64, 34, (0, 255, 0)), FilledRect(32, 36, (0, 0, 255))), FilledRect(64, 34, (255, 0, 0)))
-        ))
+        FixedSize(608, 112, Box(Blank()))
     )
 
     path = ctx.author.id

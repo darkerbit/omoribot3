@@ -39,7 +39,7 @@ class Portrait(Widget):
         return self.i >= getattr(self.raw_portrait, "n_frames", 1)
 
     def recrop(self):
-        self.portrait = self.raw_portrait.copy().convert("RGBA").resize((106, 106)).crop((1, 0, 105, 104))
+        self.portrait = self.raw_portrait.convert("RGBA").resize((106, 106)).crop((1, 0, 105, 104))
 
     def _get_size(self) -> tuple[int, int]:
         return self.portrait.size

@@ -38,6 +38,17 @@ class Widget:
         raise NotImplementedError
 
 
+class Blank(Widget):
+    def anim_done(self) -> bool:
+        return True
+
+    def _get_size(self) -> tuple[int, int]:
+        return 0, 0
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+        pass
+
+
 class Container(Widget):
     def __init__(self, *children: Widget, **kwargs):
         super().__init__(**kwargs)

@@ -60,7 +60,7 @@ class Box(Widget):
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image):
         draw = ImageDraw.Draw(image)
-        draw.rectangle((x, y, x+w-1, y+h-1), fill=(0, 0, 0, 255))
+        draw.rectangle((x, y, x + w - 1, y + h - 1), fill=(0, 0, 0, 255))
         draw.rectangle((x + 1, y + 1, x + w - 2, y + h - 2), outline=(255, 255, 255, 255), width=3)
 
         self.child.render(x + 5, y + 5, w - 10, h - 10, image)
@@ -95,30 +95,62 @@ class VStack(Container):
             cy += ch + self.padding
 
 
-class HStack(Container):
-    def __init__(self, *args, padding: int = 4, **kwargs):
-        super().__init__(*args, **kwargs)
+class HFlow(Widget):
+    def __init__(self, lines: list[list[Widget]], pad_x: int = 4, pad_y: int = 4, **kwargs):
+        super().__init__(**kwargs)
 
-        self.padding = padding
+        self.lines = lines
+        self.pad_x = pad_x
+        self.pad_y = pad_y
+
+    def anim_done(self) -> bool:
+        return all(c.anim_done for line in self.lines for c in line)
 
     def _get_size(self) -> tuple[int, int]:
-        w = (len(self.children) - 1) * self.padding
-        h = 0
+        w = 0
+        h = (len(self.lines) - 1) * self.pad_y
 
-        for c in self.children:
-            cw, ch = c.get_size()
+        for line in self.lines:
+            lw = (len(line) - 1) * self.pad_x
+            lh = 0
+            for c in line:
+                cw, ch = c.get_size()
+                lw += cw
 
-            if ch > h:
-                h = ch
+                if ch > lh:
+                    lh = ch
 
-            w += cw
+            if lw > w:
+                w = lw
+
+            h += lh
 
         return w, h
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image):
-        cx = x
+        rx = x
+        ry = y
 
-        for c in self.children:
-            cw = c.get_size()[0]
-            c.render(cx, y, cw, h, image)
-            cx += cw + self.padding
+        for line in self.lines:
+            lh = 0
+
+            for c in line:
+                cw, ch = c.get_size()
+
+                if rx + cw >= w:
+                    rx = x
+                    ry += lh + self.pad_y
+                    lh = 0
+
+                    if getattr(c, "is_space", False):
+                        continue
+
+                if ch > lh:
+                    lh = ch
+
+                c.render(rx, ry, cw, ch, image)
+
+                rx += cw + self.pad_x
+
+            rx = x
+            ry += lh + self.pad_y
