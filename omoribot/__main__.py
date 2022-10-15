@@ -3,18 +3,57 @@ from discord.ext import commands
 from PIL import Image
 
 import os
+import shutil
 import requests
+import subprocess
 
 from omoribot import *
 
 
-def render(tree: Widget, out):
+async def render(tree: Widget, out, ctx):
     im = Image.new("RGBA", tree.get_size())
 
     w, h = im.size
     tree.render(0, 0, w, h, im)
 
-    im.save(out)
+    append = []
+    rendering = None
+
+    if not tree.anim_done():
+        rendering = await ctx.reply("Rendering...")
+
+    while not tree.anim_done():
+        frame = Image.new("RGBA", im.size)
+        tree.render(0, 0, w, h, frame)
+        append.append(frame)
+
+    if len(append) > 0:
+        # Pillow's GIF saving does not work correctly so I have to do this shit
+        folder = f"outgifs/{out}/"
+
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+
+        os.makedirs(folder)
+
+        # Save first frame
+        im.save(f"{folder}00000.png")
+
+        # Save remaining frames
+        for i in range(len(append)):
+            append[i].save(f"{folder}{str(i + 1).zfill(5)}.png")
+
+        # Run ffmpeg
+        subprocess.run(f'ffmpeg -i {folder}%05d.png -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
+                       capture_output=True, check=True, shell=True)
+
+        await rendering.delete()
+
+        return f"{folder}{out}.gif"
+    else:
+        path = f"out/{out}.png"
+        im.save(path)
+        return path
 
 
 intents = discord.Intents.default()
@@ -66,22 +105,15 @@ async def resolve_portrait(ctx: commands.Context, portrait_name: str):
 
 @bot.command()
 async def portrait(ctx: commands.Context, portrait_name: str):
-    portr = ""
-
-    if portrait_name != "attached":
-        portr = await resolve_portrait(ctx, portrait_name)
-    else:
-        portr = await download_attachment(ctx)
+    portr = await resolve_portrait(ctx, portrait_name)
 
     if portr is None:
         return
 
     tree = Box(Portrait(portr))
 
-    path = f"out/{ctx.author.id}.png"
-    render(tree, path)
-
-    await ctx.reply(file=discord.File(path))
+    path = ctx.author.id
+    await ctx.reply(file=discord.File(await render(tree, path, ctx)))
 
 
 @bot.command()
@@ -89,9 +121,33 @@ async def where_the_fuck_am_i(ctx: commands.Context):
     await ctx.reply(f"I am running from {os.getcwd()}")
 
 
+@bot.command(aliases=["tb"])
+async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, text: str):
+    portr = await resolve_portrait(ctx, portrait_name)
+
+    if portr is None:
+        return
+
+    tree = VStack(
+        Layer(
+            Box(FilledRect(61, 34, (255, 0, 0, 255)), horizontal=-1, vertical=1),
+            Box(Portrait(portr), horizontal=1, vertical=1)
+        ),
+        FixedSize(608, 112, Box(
+            VStack(HStack(FilledRect(64, 34, (0, 255, 0)), FilledRect(32, 36, (0, 0, 255))), FilledRect(64, 34, (255, 0, 0)))
+        ))
+    )
+
+    path = ctx.author.id
+    await ctx.reply(file=discord.File(await render(tree, path, ctx)))
+
+
 if __name__ == '__main__':
     if not os.path.exists("out/"):
         os.makedirs("out/")
+
+    if not os.path.exists("outgifs/"):
+        os.makedirs("outgifs/")
 
     if not os.path.exists("downloads/"):
         os.makedirs("downloads/")

@@ -9,6 +9,9 @@ class Widget:
         self.horizontal = horizontal
         self.vertical = vertical
 
+    def anim_done(self) -> bool:
+        raise NotImplementedError
+
     def get_size(self) -> tuple[int, int]:
         self.w, self.h = self._get_size()
         return self.w, self.h
@@ -40,6 +43,9 @@ class Container(Widget):
         super().__init__(**kwargs)
 
         self.children = list(children)
+
+    def anim_done(self) -> bool:
+        return all(c.anim_done() for c in self.children)
 
     def add_child(self, child: Widget):
         self.children.append(child)

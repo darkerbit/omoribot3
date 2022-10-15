@@ -11,6 +11,9 @@ class FilledRect(Widget):
         self.height = h
         self.fill = fill
 
+    def anim_done(self) -> bool:
+        return True
+
     def _get_size(self) -> tuple[int, int]:
         return self.width, self.height
 
@@ -21,16 +24,35 @@ class FilledRect(Widget):
 
 
 class Portrait(Widget):
-    def __init__(self, portrait, crop=True, **kwargs):
+    def __init__(self, portrait, **kwargs):
         super().__init__(**kwargs)
 
-        self.portrait = Image.open(portrait).resize((106, 106))
+        self.portrait = None
+        self.raw_portrait = Image.open(portrait)
 
-        if crop:
-            self.portrait = self.portrait.crop((1, 0, self.portrait.size[0] - 1, self.portrait.size[1] - 2))
+        self.recrop()
+
+        self.i = 0
+        self.last = 0
+
+    def anim_done(self) -> bool:
+        return self.i >= getattr(self.raw_portrait, "n_frames", 1)
+
+    def recrop(self):
+        self.portrait = self.raw_portrait.copy().convert("RGBA").resize((106, 106)).crop((1, 0, 105, 104))
 
     def _get_size(self) -> tuple[int, int]:
         return self.portrait.size
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image):
+        if self.anim_done():
+            self.i = 0
+
+        if self.i != self.last:
+            self.raw_portrait.seek(self.i)
+            self.recrop()
+            self.last = self.i
+
         image.alpha_composite(self.portrait, dest=(x, y))
+
+        self.i += 1

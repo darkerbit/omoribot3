@@ -11,6 +11,9 @@ class FixedSize(Widget):
         self.height = h
         self.child = child
 
+    def anim_done(self) -> bool:
+        return self.child.anim_done()
+
     def _get_size(self) -> tuple[int, int]:
         self.child.get_size()  # Has side effects so I need to do this first
 
@@ -47,6 +50,9 @@ class Box(Widget):
 
         self.child = child
 
+    def anim_done(self) -> bool:
+        return self.child.anim_done()
+
     def _get_size(self) -> tuple[int, int]:
         w, h = self.child.get_size()
 
@@ -58,3 +64,61 @@ class Box(Widget):
         draw.rectangle((x + 1, y + 1, x + w - 2, y + h - 2), outline=(255, 255, 255, 255), width=3)
 
         self.child.render(x + 5, y + 5, w - 10, h - 10, image)
+
+
+class VStack(Container):
+    def __init__(self, *args, padding: int = 4, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.padding = padding
+
+    def _get_size(self) -> tuple[int, int]:
+        w = 0
+        h = (len(self.children) - 1) * self.padding
+
+        for c in self.children:
+            cw, ch = c.get_size()
+
+            if cw > w:
+                w = cw
+
+            h += ch
+
+        return w, h
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+        cy = y
+
+        for c in self.children:
+            ch = c.get_size()[1]
+            c.render(x, cy, w, ch, image)
+            cy += ch + self.padding
+
+
+class HStack(Container):
+    def __init__(self, *args, padding: int = 4, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.padding = padding
+
+    def _get_size(self) -> tuple[int, int]:
+        w = (len(self.children) - 1) * self.padding
+        h = 0
+
+        for c in self.children:
+            cw, ch = c.get_size()
+
+            if ch > h:
+                h = ch
+
+            w += cw
+
+        return w, h
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+        cx = x
+
+        for c in self.children:
+            cw = c.get_size()[0]
+            c.render(cx, y, cw, h, image)
+            cx += cw + self.padding
