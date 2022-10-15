@@ -1,5 +1,7 @@
 from .layout import *
 
+import math
+
 from PIL import ImageDraw
 
 
@@ -17,7 +19,7 @@ class FilledRect(Widget):
     def _get_size(self) -> tuple[int, int]:
         return self.width, self.height
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         draw = ImageDraw.Draw(image)
 
         draw.rectangle((x, y, x + w - 1, y + h - 1), fill=self.fill)
@@ -44,7 +46,7 @@ class Portrait(Widget):
     def _get_size(self) -> tuple[int, int]:
         return self.portrait.size
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         if self.anim_done():
             self.i = 0
 
@@ -56,3 +58,33 @@ class Portrait(Widget):
         image.alpha_composite(self.portrait, dest=(x, y))
 
         self.i += 1
+
+
+class Arrow(Widget):
+    arrow = Image.open("assets/arrow.png").convert("RGBA")
+
+    def __init__(self, distance: int = 8, time: int = 30, **kwargs):
+        super().__init__(**kwargs)
+
+        self.distance = distance
+
+        self.time = time
+        self.frame = 0
+
+    def anim_done(self) -> bool:
+        return self.frame >= self.time
+
+    def _get_size(self) -> tuple[int, int]:
+        iw, ih = self.arrow.size
+
+        return iw, ih
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if self.frame >= self.time:
+            self.frame = 0
+
+        ix = int(x - self.distance / 2 - math.sin(float(self.frame) / float(self.time) * 2 * math.pi) * self.distance / 2)
+
+        image.alpha_composite(self.arrow, dest=(ix, y))
+
+        self.frame += 1

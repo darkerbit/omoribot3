@@ -66,7 +66,7 @@ class TextElement(Widget):
         x, y, w, h = self.font.getbbox(self.text, anchor="la")
         return w, h
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         draw = ImageDraw.Draw(image, "RGBA")
 
         draw.text((x, y), self.text, font=self.font, anchor="la", fill=self.color)
@@ -82,6 +82,7 @@ class TextParser:
 
         def copy(self):
             o = self.__class__()
+            o.size = self.size
             o.font = self.font
             o.color = self.color
             o.clazz = self.clazz
@@ -192,5 +193,5 @@ class Text(Widget):
     def _get_size(self) -> tuple[int, int]:
         return self.flow.get_size()
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
-        return self.flow.render(x, y, w, h, image)
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        return self.flow.render(x, y, w, h, image, dbg)

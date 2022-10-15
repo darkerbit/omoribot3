@@ -5,16 +5,42 @@ import os
 import shutil
 import requests
 import subprocess
-import random
 
 from omoribot import *
 
 
-async def render(tree: Widget, out, ctx):
-    im = Image.new("RGBA", tree.get_size())
+class GifDebugger:
+    def __init__(self, folder):
+        self.i = 0
+        self.folder = folder
 
+    def emit_frame(self, dbg):
+        dbg.save(f"{self.folder}{str(self.i).zfill(5)}.png")
+        self.i += 1
+
+
+async def render(tree: Widget, out, ctx, debug):
+    im = Image.new("RGBA", tree.get_size())
     w, h = im.size
-    tree.render(0, 0, w, h, im)
+
+    if debug:
+        folder = f"debug/{out}/"
+
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
+
+        os.makedirs(folder)
+
+        dbg = GifDebugger(folder)
+        tree.render(0, 0, w, h, im, dbg)
+        dbg.emit_frame(im)
+
+        subprocess.run(f'ffmpeg -framerate 3 -i {folder}%05d.png -vf "fps=3,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
+                       capture_output=True, check=True, shell=True)
+
+        await ctx.send("Debug:", file=discord.File(f"{folder}{out}.gif"))
+    else:
+        tree.render(0, 0, w, h, im, None)
 
     append = []
     rendering = None
@@ -24,7 +50,7 @@ async def render(tree: Widget, out, ctx):
 
     while not tree.anim_done():
         frame = Image.new("RGBA", im.size)
-        tree.render(0, 0, w, h, frame)
+        tree.render(0, 0, w, h, frame, None)
         append.append(frame)
 
     if len(append) > 0:
@@ -44,7 +70,7 @@ async def render(tree: Widget, out, ctx):
             append[i].save(f"{folder}{str(i + 1).zfill(5)}.png")
 
         # Run ffmpeg
-        subprocess.run(f'ffmpeg -i {folder}%05d.png -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
+        subprocess.run(f'ffmpeg -framerate 30 -i {folder}%05d.png -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
                        capture_output=True, check=True, shell=True)
 
         await rendering.delete()
@@ -105,6 +131,10 @@ async def resolve_portrait(ctx: commands.Context, portrait_name: str):
 
 @bot.command()
 async def portrait(ctx: commands.Context, portrait_name: str):
+    debug = portrait_name.startswith("&DEBUG&")
+    if debug:
+        portrait_name = portrait_name.removeprefix("&DEBUG&")
+
     portr = await resolve_portrait(ctx, portrait_name)
 
     if portr is None:
@@ -113,7 +143,7 @@ async def portrait(ctx: commands.Context, portrait_name: str):
     tree = Box(Portrait(portr))
 
     path = ctx.author.id
-    await ctx.reply(file=discord.File(await render(tree, path, ctx)))
+    await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
 
 
 @bot.command()
@@ -123,6 +153,10 @@ async def where_the_fuck_am_i(ctx: commands.Context):
 
 @bot.command(aliases=["tb"])
 async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
+    debug = message.startswith("&DEBUG&")
+    if debug:
+        message = message.removeprefix("&DEBUG&")
+
     layer = Layer()
 
     if name != "none":
@@ -136,13 +170,23 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, messa
 
         layer.add_child(Box(Portrait(portr), horizontal=1, vertical=1))
 
+    arrow = message.endswith("->")
+
+    if arrow:
+        message = message.removesuffix("->")
+
+    dialogue = Layer(Margin(Text(message), top=6, left=12, right=12))
+
+    if arrow:
+        dialogue.add_child(Margin(Arrow(horizontal=1, vertical=1)))
+
     tree = VStack(
         layer,
-        FixedSize(608, 112, Box(Margin(Text(message), top=6, left=12, right=12)))
+        FixedSize(608, 112, Box(dialogue))
     )
 
     path = ctx.author.id
-    await ctx.reply(file=discord.File(await render(tree, path, ctx)))
+    await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
 
 
 if __name__ == '__main__':
@@ -154,6 +198,9 @@ if __name__ == '__main__':
 
     if not os.path.exists("downloads/"):
         os.makedirs("downloads/")
+
+    if not os.path.exists("debug/"):
+        os.makedirs("debug/")
 
     with open("token", "r") as f:
         token = f.read().strip()

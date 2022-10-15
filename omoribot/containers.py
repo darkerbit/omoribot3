@@ -19,8 +19,8 @@ class FixedSize(Widget):
 
         return self.width, self.height
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
-        self.child.render(x, y, w, h, image)
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        self.child.render(x, y, w, h, image, dbg)
 
 
 class Layer(Container):
@@ -39,9 +39,9 @@ class Layer(Container):
 
         return w, h
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         for c in self.children:
-            c.render(x, y, w, h, image)
+            c.render(x, y, w, h, image, dbg)
 
 
 class Box(Widget):
@@ -58,12 +58,12 @@ class Box(Widget):
 
         return w + 10, h + 10
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         draw = ImageDraw.Draw(image)
         draw.rectangle((x, y, x + w - 1, y + h - 1), fill=(0, 0, 0, 255))
         draw.rectangle((x + 1, y + 1, x + w - 2, y + h - 2), outline=(255, 255, 255, 255), width=3)
 
-        self.child.render(x + 5, y + 5, w - 10, h - 10, image)
+        self.child.render(x + 5, y + 5, w - 10, h - 10, image, dbg)
 
 
 class VStack(Container):
@@ -86,12 +86,12 @@ class VStack(Container):
 
         return w, h
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         cy = y
 
         for c in self.children:
             ch = c.get_size()[1]
-            c.render(x, cy, w, ch, image)
+            c.render(x, cy, w, ch, image, dbg)
             cy += ch + self.padding
 
 
@@ -129,7 +129,7 @@ class HFlow(Widget):
 
         return w, h
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         rx = x
         ry = y
 
@@ -150,7 +150,7 @@ class HFlow(Widget):
                 if ch > lh:
                     lh = ch
 
-                c.render(rx, ry, cw, ch, image)
+                c.render(rx, ry, cw, ch, image, dbg)
 
                 rx += cw + self.pad_x
 
@@ -177,5 +177,5 @@ class Margin(Widget):
 
         return cw + self.left + self.right, ch + self.top + self.bottom
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
-        self.child.render(x + self.left, y + self.top, w - self.left - self.right, h - self.top - self.bottom, image)
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        self.child.render(x + self.left, y + self.top, w - self.left - self.right, h - self.top - self.bottom, image, dbg)

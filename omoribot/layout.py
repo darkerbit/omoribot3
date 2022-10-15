@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 
 
 class Widget:
@@ -19,22 +19,46 @@ class Widget:
     def _get_size(self) -> tuple[int, int]:
         raise NotImplementedError
 
-    def render(self, x: int, y: int, w: int, h: int, image: Image):
+    def render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if dbg is not None:
+            from .text import TextElement
+
+            dbg_im = image.copy()
+            draw = ImageDraw.Draw(dbg_im, "RGBA")
+
+            font = TextElement.cache(TextElement.font_omori, 16)
+
+            draw.rectangle((x, y, w+x-1, h+y-1), fill=(0, 0, 255, 255))
+            draw.text((x, y), f"{x} {y}\n{w} {h}\n{self.w} {self.h}", fill=(255, 255, 255, 255), stroke_fill=(0, 0, 0, 255), stroke_width=1, font=font, anchor="la")
+            dbg.emit_frame(dbg_im)
+
         if self.horizontal < 0:
             w = self.w
         elif self.horizontal > 0:
-            x = w - self.w
+            x = x + w - self.w
             w = self.w
 
         if self.vertical < 0:
             h = self.h
         elif self.vertical > 0:
-            y = h - self.h
+            y = y + h - self.h
             h = self.h
 
-        self._render(x, y, w, h, image)
+        if dbg is not None:
+            from .text import TextElement
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+            dbg_im = image.copy()
+            draw = ImageDraw.Draw(dbg_im, "RGBA")
+
+            font = TextElement.cache(TextElement.font_omori, 16)
+
+            draw.rectangle((x, y, w + x - 1, h + y - 1), fill=(0, 255, 0, 255))
+            draw.text((x, y), f"{x} {y}\n{w} {h}\n{self.w} {self.h}", fill=(255, 255, 255, 255), stroke_fill=(0, 0, 0, 255), stroke_width=1, font=font, anchor="la")
+            dbg.emit_frame(dbg_im)
+
+        self._render(x, y, w, h, image, dbg)
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         raise NotImplementedError
 
 
@@ -45,7 +69,7 @@ class Blank(Widget):
     def _get_size(self) -> tuple[int, int]:
         return 0, 0
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         pass
 
 
@@ -67,5 +91,5 @@ class Container(Widget):
     def _get_size(self) -> tuple[int, int]:
         raise NotImplementedError
 
-    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         raise NotImplementedError
