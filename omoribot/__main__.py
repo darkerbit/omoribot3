@@ -130,10 +130,10 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, messa
 
     tree = VStack(
         Layer(
-            Box(Margin(TextElement(name, "omori", (255, 255, 255, 255), 28)), horizontal=-1, vertical=1),
+            Box(Margin(Text(name), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1),
             Box(Portrait(portr), horizontal=1, vertical=1)
         ),
-        FixedSize(608, 112, Box(Margin(TextElement(message, "omori", (255, 255, 255, 255), 28), hmargin=13, vmargin=12)))
+        FixedSize(608, 112, Box(Margin(Text(message), top=6, left=12, right=12)))
     )
 
     path = ctx.author.id
