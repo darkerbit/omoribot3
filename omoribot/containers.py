@@ -154,3 +154,22 @@ class HFlow(Widget):
 
             rx = x
             ry += lh + self.pad_y
+
+
+class Margin(Widget):
+    def __init__(self, child: Widget, hmargin: int = 7, vmargin: int = 9, **kwargs):
+        super().__init__(**kwargs)
+
+        self.child = child
+        self.hmargin = hmargin
+        self.vmargin = vmargin
+
+    def anim_done(self) -> bool:
+        return self.child.anim_done()
+
+    def _get_size(self) -> tuple[int, int]:
+        w, h = self.child.get_size()
+        return w + 2 * self.hmargin, h + 2 * self.vmargin
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image):
+        self.child.render(x + self.hmargin, y + self.vmargin, w - 2 * self.hmargin, h - 2 * self.vmargin, image)

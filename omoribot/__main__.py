@@ -122,7 +122,7 @@ async def where_the_fuck_am_i(ctx: commands.Context):
 
 
 @bot.command(aliases=["tb"])
-async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, text: str):
+async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
     portr = await resolve_portrait(ctx, portrait_name)
 
     if portr is None:
@@ -130,10 +130,10 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, text:
 
     tree = VStack(
         Layer(
-            Box(TextElement(name, "omori", (255, 255, 255, 255), 28), horizontal=-1, vertical=1),
+            Box(Margin(TextElement(name, "omori", (255, 255, 255, 255), 28)), horizontal=-1, vertical=1),
             Box(Portrait(portr), horizontal=1, vertical=1)
         ),
-        FixedSize(608, 112, Box(Blank()))
+        FixedSize(608, 112, Box(Margin(TextElement(message, "omori", (255, 255, 255, 255), 28), hmargin=13, vmargin=12)))
     )
 
     path = ctx.author.id
