@@ -130,7 +130,7 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, text:
 
     tree = VStack(
         Layer(
-            Box(Blank(), horizontal=-1, vertical=1),
+            Box(TextElement(name, "omori", (255, 255, 255, 255), 28), horizontal=-1, vertical=1),
             Box(Portrait(portr), horizontal=1, vertical=1)
         ),
         FixedSize(608, 112, Box(Blank()))

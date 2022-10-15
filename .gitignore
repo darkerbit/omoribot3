@@ -2,5 +2,6 @@ portraits/
 out/
 outgifs/
 downloads/
+fonts/
 token
 *.pyc
