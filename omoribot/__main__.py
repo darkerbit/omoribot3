@@ -151,6 +151,13 @@ async def where_the_fuck_am_i(ctx: commands.Context):
     await ctx.reply(f"I am running from {os.getcwd()}")
 
 
+@bot.command()
+async def wipe_cache(ctx: commands.Context):
+    TextElement.font_cache = {}
+    print("wiped cache!")
+    await ctx.reply("Wiped font cache!")
+
+
 @bot.command(aliases=["tb"])
 async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
     debug = message.startswith("&DEBUG&")
