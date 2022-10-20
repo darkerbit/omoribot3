@@ -118,6 +118,16 @@ class Wobbly(SpecialTextElement):
 
 
 class TextParser:
+    omori_colors = {
+        "snack": "#51C059",
+        "important": "#FFD966",
+        "toy": "#FF9232",
+        "skill": "#5E92FA",
+        "location": "#5AE0D8",
+        "weapon": "#AE58CB",
+        "charm": "#C263E2",
+    }
+
     class Settings:
         def __init__(self):
             self.font = "omori"
@@ -180,7 +190,9 @@ class TextParser:
                     elif setting[0] == "size":
                         self.settings.size = int(setting[1])
                     elif setting[0] == "color" or setting[0] == "colour":
-                        self.settings.color = ImageColor.getcolor(setting[1], "RGBA")
+                        col = setting[1].lower()
+
+                        self.settings.color = ImageColor.getcolor(self.omori_colors[col] if col in self.omori_colors else col, "RGBA")
                     elif setting[0] == "normal" or setting[0] == "reset":
                         self.settings.clazz = TextElement
                     elif setting[0] == "shiver" or setting[0] == "shivering" \

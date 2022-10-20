@@ -49,3 +49,9 @@ Please be aware that these fonts are not in this repository. You can see the req
 - If you put `&DEBUG&` at the start of your message, it renders a debug visualisation of the first frame of the output.
 - You can use tags either as in `[wobbly][/]` or `[wobbly][/wobbly]`. The code doesn't care either way.
 - Animated attached portraits are supported, though please be aware that they are always played at 30fps no matter what the original framerate was.
+
+## OMORI COLOUR ALIASES
+
+(New) You can consult the chart below to find the common colours used in OMORI. Just pass the name into `[color]`, e.g. `[color=weapon]`.
+
+![OMORI colour chart](assets/colour_chart.png)
