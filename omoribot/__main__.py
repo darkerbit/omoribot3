@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 import os
+import sys
 import shutil
 import requests
 import subprocess
@@ -85,7 +86,7 @@ async def render(tree: Widget, out, ctx, debug):
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='?', intents=intents)
+bot = commands.Bot(command_prefix='!' if sys.argv[1] == "local" else '?', intents=intents)
 
 
 async def download_attachment(ctx: commands.Context):
@@ -193,7 +194,14 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, messa
     )
 
     path = ctx.author.id
-    await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
+
+    try:
+        await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
+    except discord.HTTPException as e:
+        if e.status != 413:
+            raise
+
+        await ctx.reply("Resulting render is too large!")
 
 
 if __name__ == '__main__':

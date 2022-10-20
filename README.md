@@ -8,7 +8,7 @@ A discord bot for creating OMORI-styled text boxes.
 2. Place dialogue portraits into `portraits/` and fonts into `fonts/`
 3. `pip3 install pipenv` (or `sudo dnf install pipenv` on Fedora)
 4. `pipenv install`
-5. `pipenv run python3 -m omoribot`
+5. `pipenv run python3 -m omoribot` (pass in `local` to use `!` as the prefix, meant for debugging)
 
 ### How do use?
 
