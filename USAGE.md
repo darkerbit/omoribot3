@@ -22,7 +22,7 @@ Available formatting tags:
 - `[size=<size>]` Sets the text size.
 - `[font=<font>]` Sets the font. List of available fonts will be further down.
 - `[color=<color>]` or `[colour=<colour>]` Sets the colour. Accepts basically every format ever, be it html colours `gold` or hex codes `#FFD200`. ("colour" is an alias because I spell it that way)
-- `[shiver]` or `[shivering]` Makes the text shiver.
+- `[shiver]`, `[shivering]`, `[shake]` or `[shaky]` Makes the text shiver.
 - `[wobbly]` or `[wobbling]` Makes the text wobble.
 - `[normal]` or `[reset]` Returns the text to normal, though in most cases you probably shouldn't need to use this when you can just instead end the previous tag with `[/]`.
 

@@ -183,7 +183,8 @@ class TextParser:
                         self.settings.color = ImageColor.getcolor(setting[1], "RGBA")
                     elif setting[0] == "normal" or setting[0] == "reset":
                         self.settings.clazz = TextElement
-                    elif setting[0] == "shiver" or setting[0] == "shivering":
+                    elif setting[0] == "shiver" or setting[0] == "shivering" \
+                            or setting[0] == "shake" or setting[0] == "shaky":
                         self.settings.clazz = Shivering
                     elif setting[0] == "wobble" or setting[0] == "wobbly":
                         self.settings.clazz = Wobbly
