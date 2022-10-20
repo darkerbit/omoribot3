@@ -86,7 +86,7 @@ async def render(tree: Widget, out, ctx, debug):
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='!' if sys.argv[1] == "local" else '?', intents=intents)
+bot = commands.Bot(command_prefix='!' if len(sys.argv) > 1 and sys.argv[1] == "local" else '?', intents=intents)
 
 
 async def download_attachment(ctx: commands.Context):
