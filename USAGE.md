@@ -42,8 +42,6 @@ Available fonts:
 - `kr`, `korean`: Korean font. Mostly incomplete.
 - `ch`, `cn`, `chinese`: Chinese font.
 
-Please be aware that these fonts are not in this repository. You can see the required fonts in `omoribot/text.py`.
-
 ## RANDOM THINGS
 
 - If you put `&DEBUG&` at the start of your message, it renders a debug visualisation of the first frame of the output.
