@@ -65,3 +65,15 @@ All of these extra commands support `&DEBUG&` also.
 - `?portrait`: Displays just the given portrait framed in a box.
 - `?text`: Displays just the given text framed in a box. Same settings as the character name.
 - `?guide_header`: Generates one of the headers used in the Discord version of the Usage Guide. Deletes your invocation.
+
+## CHOICERS
+
+You can create a choicer by using the following syntax:
+
+`?ch <name> <portrait> <choices> <text...>`
+
+where `<choices>` is a `;`-separated list of choices. For example, in order to create a YES/NO dialogue box, you would use `YES;NO` here.
+
+To add an arrow to one of the choices (by default there's no arrows which looks a bit odd), you can simply add `->` before the choice you want. So if you wanted `YES` to be selected by default in the above example, you could use `->YES;NO`, or if you wanted `NO` to be selected, you could use `YES;->NO`.
+
+There is no limit to the amount of choices, and every choice supports the formatting tags above.

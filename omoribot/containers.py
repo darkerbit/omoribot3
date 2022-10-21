@@ -95,6 +95,35 @@ class VStack(Container):
             cy += ch + self.padding
 
 
+class HStack(Container):
+    def __init__(self, *args, padding: int = 4, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.padding = padding
+
+    def _get_size(self) -> tuple[int, int]:
+        w = (len(self.children) - 1) * self.padding
+        h = 0
+
+        for c in self.children:
+            cw, ch = c.get_size()
+
+            if ch > h:
+                h = ch
+
+            w += cw
+
+        return w, h
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        cx = x
+
+        for c in self.children:
+            cw = c.get_size()[0]
+            c.render(cx, y, cw, h, image, dbg)
+            cx += cw + self.padding
+
+
 class HFlow(Widget):
     def __init__(self, lines: list[list[Widget]], pad_x: int = 4, pad_y: int = 4, can_newline=True, **kwargs):
         super().__init__(**kwargs)

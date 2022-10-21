@@ -140,7 +140,7 @@ async def generate(ctx: commands.Context, debug: bool, tree: Widget):
         await ctx.reply("Resulting render is too large!")
 
 
-async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str, choicer, message: str):
+async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str, choices, message: str):
     debug = message.startswith("&DEBUG&")
 
     if debug:
@@ -148,19 +148,39 @@ async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str,
 
     stack = VStack()
 
-    if name != "none" or portrait_name != "none" or (choicer is not None and choicer != "none"):
+    if name != "none" or portrait_name != "none" or (choices is not None and choices != "none"):
         layer = Layer()
 
         if name != "none":
             layer.add_child(Box(Margin(Text(name, can_newline=False), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1))
 
-        if portrait_name != "none":
-            portr = await resolve_portrait(ctx, portrait_name)
+        if portrait_name != "none" or (choices is not None and choices != "none"):
+            hstack = HStack(horizontal=1, vertical=1)
 
-            if portr is None:
-                return
+            if choices is not None and choices != "none":
+                cstack = VStack(padding=6)
 
-            layer.add_child(Box(Portrait(portr), horizontal=1, vertical=1))
+                for choice in choices.split(";"):
+                    choice = choice.strip()
+
+                    selected = choice.startswith("->")
+
+                    if selected:
+                        choice = choice.removeprefix("->")
+
+                    cstack.add_child(HStack(Margin(Arrow(visible=selected), top=8, bottom=0, left=2, right=-2), Text(choice, can_newline=False)))
+
+                hstack.add_child(Box(Margin(cstack, bottom=11, right=10, left=5, top=6), vertical=1))
+
+            if portrait_name != "none":
+                portr = await resolve_portrait(ctx, portrait_name)
+
+                if portr is None:
+                    return
+
+                hstack.add_child(Box(Portrait(portr), vertical=1))
+
+            layer.add_child(hstack)
 
         stack.add_child(layer)
 
@@ -230,6 +250,11 @@ async def wipe_cache(ctx: commands.Context):
 @bot.command(aliases=["tb"])
 async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
     await generate_textbox(ctx, name, portrait_name, None, message)
+
+
+@bot.command(aliases=["ch"])
+async def choicer(ctx: commands.Context, name: str, portrait_name: str, choices: str, *, message: str):
+    await generate_textbox(ctx, name, portrait_name, choices, message)
 
 
 if __name__ == '__main__':

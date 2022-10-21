@@ -63,16 +63,17 @@ class Portrait(Widget):
 class Arrow(Widget):
     arrow = Image.open("assets/arrow.png").convert("RGBA")
 
-    def __init__(self, distance: int = 8, time: int = 30, **kwargs):
+    def __init__(self, visible: bool = True, distance: int = 8, time: int = 30, **kwargs):
         super().__init__(**kwargs)
 
         self.distance = distance
 
         self.time = time
         self.frame = 0
+        self.visible = visible
 
     def anim_done(self) -> bool:
-        return self.frame >= self.time
+        return (not self.visible) or self.frame >= self.time
 
     def _get_size(self) -> tuple[int, int]:
         iw, ih = self.arrow.size
@@ -80,6 +81,9 @@ class Arrow(Widget):
         return iw, ih
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if not self.visible:
+            return
+
         if self.frame >= self.time:
             self.frame = 0
 
