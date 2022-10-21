@@ -35,7 +35,7 @@ class Layer(Container):
                 w = cw
 
             if ch > h:
-                h = cw
+                h = ch
 
         return w, h
 

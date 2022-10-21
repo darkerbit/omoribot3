@@ -20,6 +20,12 @@ class GifDebugger:
         self.i += 1
 
 
+intents = discord.Intents.default()
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!' if len(sys.argv) > 1 and sys.argv[1] == "local" else '?', intents=intents)
+
+
 async def render(tree: Widget, out, ctx, debug):
     im = Image.new("RGBA", tree.get_size())
     w, h = im.size
@@ -83,12 +89,6 @@ async def render(tree: Widget, out, ctx, debug):
         return path
 
 
-intents = discord.Intents.default()
-intents.message_content = True
-
-bot = commands.Bot(command_prefix='!' if len(sys.argv) > 1 and sys.argv[1] == "local" else '?', intents=intents)
-
-
 async def download_attachment(ctx: commands.Context):
     folder = f"downloads/{ctx.author.id}/"
 
@@ -130,21 +130,78 @@ async def resolve_portrait(ctx: commands.Context, portrait_name: str):
     return portr
 
 
+async def generate(ctx: commands.Context, debug: bool, tree: Widget):
+    try:
+        await ctx.reply(file=discord.File(await render(tree, ctx.author.id, ctx, debug)))
+    except discord.HTTPException as e:
+        if e.status != 413:
+            raise
+
+        await ctx.reply("Resulting render is too large!")
+
+
+async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str, choicer, message: str):
+    debug = message.startswith("&DEBUG&")
+
+    if debug:
+        message = message.removeprefix("&DEBUG&")
+
+    stack = VStack()
+
+    if name != "none" or portrait_name != "none" or (choicer is not None and choicer != "none"):
+        layer = Layer()
+
+        if name != "none":
+            layer.add_child(Box(Margin(Text(name, can_newline=False), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1))
+
+        if portrait_name != "none":
+            portr = await resolve_portrait(ctx, portrait_name)
+
+            if portr is None:
+                return
+
+            layer.add_child(Box(Portrait(portr), horizontal=1, vertical=1))
+
+        stack.add_child(layer)
+
+    arrow = message.endswith("->")
+
+    if arrow:
+        message = message.removesuffix("->")
+
+    dialogue = Layer(Margin(Text(message), top=6, left=12, right=12))
+
+    if arrow:
+        dialogue.add_child(Margin(Arrow(horizontal=1, vertical=1)))
+
+    stack.add_child(FixedSize(608, 112, Box(dialogue)))
+
+    await generate(ctx, debug, stack)
+
+
 @bot.command()
 async def portrait(ctx: commands.Context, portrait_name: str):
     debug = portrait_name.startswith("&DEBUG&")
+
     if debug:
-        portrait_name = portrait_name.removeprefix("&DEBUG&")
+        portrait_name = portrait_name.removeprefix("&DEBUG")
 
     portr = await resolve_portrait(ctx, portrait_name)
 
     if portr is None:
         return
 
-    tree = Box(Portrait(portr))
+    await generate(ctx, debug, Box(Portrait(portr)))
 
-    path = ctx.author.id
-    await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
+
+@bot.command()
+async def text(ctx: commands.Context, *, message: str):
+    debug = message.startswith("&DEBUG&")
+
+    if debug:
+        message = message.removeprefix("&DEBUG&")
+
+    await generate(ctx, debug, Box(Margin(Text(message, can_newline=False), top=0, bottom=11, left=7, right=8)))
 
 
 @bot.command()
@@ -161,47 +218,7 @@ async def wipe_cache(ctx: commands.Context):
 
 @bot.command(aliases=["tb"])
 async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, message: str):
-    debug = message.startswith("&DEBUG&")
-    if debug:
-        message = message.removeprefix("&DEBUG&")
-
-    layer = Layer()
-
-    if name != "none":
-        layer.add_child(Box(Margin(Text(name, can_newline=False), top=0, bottom=11, left=7, right=8), horizontal=-1, vertical=1))
-
-    if portrait_name != "none":
-        portr = await resolve_portrait(ctx, portrait_name)
-
-        if portr is None:
-            return
-
-        layer.add_child(Box(Portrait(portr), horizontal=1, vertical=1))
-
-    arrow = message.endswith("->")
-
-    if arrow:
-        message = message.removesuffix("->")
-
-    dialogue = Layer(Margin(Text(message), top=6, left=12, right=12))
-
-    if arrow:
-        dialogue.add_child(Margin(Arrow(horizontal=1, vertical=1)))
-
-    tree = VStack(
-        layer,
-        FixedSize(608, 112, Box(dialogue))
-    )
-
-    path = ctx.author.id
-
-    try:
-        await ctx.reply(file=discord.File(await render(tree, path, ctx, debug)))
-    except discord.HTTPException as e:
-        if e.status != 413:
-            raise
-
-        await ctx.reply("Resulting render is too large!")
+    await generate_textbox(ctx, name, portrait_name, None, message)
 
 
 if __name__ == '__main__':

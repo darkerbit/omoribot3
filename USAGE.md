@@ -55,3 +55,10 @@ Please be aware that these fonts are not in this repository. You can see the req
 (New) You can consult the chart below to find the common colours used in OMORI. Just pass the name into `[color]`, e.g. `[color=weapon]`.
 
 ![OMORI colour chart](assets/colour_chart.png)
+
+## EXTRA COMMANDS
+
+All of these extra commands support `&DEBUG&` also.
+
+- `?portrait`: Displays just the given portrait framed in a box.
+- `?text`: Displays just the given text framed in a box. Same settings as the character name.
