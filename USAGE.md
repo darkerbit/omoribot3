@@ -50,9 +50,11 @@ Please be aware that these fonts are not in this repository. You can see the req
 - You can use tags either as in `[wobbly][/]` or `[wobbly][/wobbly]`. The code doesn't care either way.
 - Animated attached portraits are supported, though please be aware that they are always played at 30fps no matter what the original framerate was.
 
-## OMORI COLOUR ALIASES
+## AVAILABLE COLOURS
 
-(New) You can consult the chart below to find the common colours used in OMORI. Just pass the name into `[color]`, e.g. `[color=weapon]`.
+1. You can pass any hex string into `[color]`, e.g. `[color=#FE38FF]`
+2. You can pass in a HTML5 colour name into `[color]`, e.g. `[color=gold]`
+3. You can pass in one of the special colours in the chart below into `[color]`, e.g. `[color=weapon]`
 
 ![OMORI colour chart](assets/colour_chart.png)
 

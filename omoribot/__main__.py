@@ -205,6 +205,17 @@ async def text(ctx: commands.Context, *, message: str):
 
 
 @bot.command()
+async def guide_header(ctx: commands.Context, *, message: str):
+    debug = message.startswith("&DEBUG&")
+
+    if debug:
+        message = message.removeprefix("&DEBUG&")
+
+    await ctx.message.delete()
+    await ctx.send(file=discord.File(await render(Box(Margin(Text(f"[size=40]{message}[/]", can_newline=False), top=0, bottom=11, left=7, right=8)), ctx.author.id, ctx, debug)))
+
+
+@bot.command()
 async def where_the_fuck_am_i(ctx: commands.Context):
     await ctx.reply(f"I am running from {os.getcwd()}")
 
