@@ -1,5 +1,7 @@
 # Omoribot 3
 
+![Example textbox](assets/example.gif)
+
 A discord bot for creating OMORI-styled text boxes.
 
 ### How do run?
