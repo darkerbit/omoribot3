@@ -64,3 +64,4 @@ All of these extra commands support `&DEBUG&` also.
 
 - `?portrait`: Displays just the given portrait framed in a box.
 - `?text`: Displays just the given text framed in a box. Same settings as the character name.
+- `?guide_header`: Generates one of the headers used in the Discord version of the Usage Guide. Deletes your invocation.
