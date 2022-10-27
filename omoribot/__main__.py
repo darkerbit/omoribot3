@@ -89,7 +89,7 @@ async def render(tree: Widget, out, ctx, debug):
         return path
 
 
-async def download_attachment(ctx: commands.Context):
+async def download_attachment(ctx: commands.Context, prefix: str = "portrait"):
     folder = f"downloads/{ctx.author.id}/"
 
     if not os.path.exists(folder):
@@ -101,7 +101,7 @@ async def download_attachment(ctx: commands.Context):
 
     attachment = ctx.message.attachments.pop()
 
-    path = f"{folder}{attachment.filename}"
+    path = f"{folder}{prefix}_{attachment.filename}"
 
     with open(path, "wb") as o:
         r = requests.get(attachment.url)
@@ -212,6 +212,25 @@ async def portrait(ctx: commands.Context, portrait_name: str):
         return
 
     await generate(ctx, debug, Box(Portrait(portr)))
+
+
+async def do_frame(ctx: commands.Context, debug: bool):
+    im = await download_attachment(ctx, "background")
+
+    if im is None:
+        return
+
+    await generate(ctx, debug, Box(ImageWidget(im)))
+
+
+@bot.command()
+async def frame(ctx: commands.Context):
+    await do_frame(ctx, False)
+
+
+@bot.command()
+async def frame_debug(ctx: commands.Context):
+    await do_frame(ctx, True)
 
 
 @bot.command()
