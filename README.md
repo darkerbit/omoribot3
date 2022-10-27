@@ -6,13 +6,12 @@ A discord bot for creating OMORI-styled text boxes.
 
 ### How do run?
 
-Make sure you have `ffmpeg` installed.
+First, install Poetry by [following the instructions in the official documentation](https://python-poetry.org/docs/#installing-with-the-official-installer).
 
 1. Place bot token into `token` next to `main.py` (Message content intent required)
 2. Place dialogue portraits into `portraits/`
-3. `pip3 install pipenv` (or `sudo dnf install pipenv` on Fedora)
-4. `pipenv install`
-5. `pipenv run python3 -m omoribot` (pass in `local` to use `!` as the prefix, meant for debugging)
+3. `poetry install`
+4. `poetry run python3 -m omoribot` (pass in `local` to use `!` as the prefix, meant for debugging)
 
 ### How do use?
 
