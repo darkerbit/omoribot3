@@ -11,13 +11,24 @@ from omoribot import *
 
 
 class GifDebugger:
-    def __init__(self, folder):
+    def __init__(self, folder, file):
         self.i = 0
         self.folder = folder
+        self.file = file
+        self.indent = 0
 
     def emit_frame(self, dbg):
         dbg.save(f"{self.folder}{str(self.i).zfill(5)}.png")
         self.i += 1
+
+    def emit_name(self, name):
+        self.file.write(". " * self.indent + name + "\n")
+
+    def push(self):
+        self.indent += 1
+
+    def pop(self):
+        self.indent -= 1
 
 
 intents = discord.Intents.default()
@@ -38,14 +49,16 @@ async def render(tree: Widget, out, ctx, debug):
 
         os.makedirs(folder)
 
-        dbg = GifDebugger(folder)
+        f = open(f"{folder}trace.txt", "w")
+        dbg = GifDebugger(folder, f)
         tree.render(0, 0, w, h, im, dbg)
         dbg.emit_frame(im)
+        f.close()
 
         subprocess.run(f'ffmpeg -framerate 3 -i {folder}%05d.png -vf "fps=3,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
                        capture_output=True, check=True, shell=True)
 
-        await ctx.send("Debug:", file=discord.File(f"{folder}{out}.gif"))
+        await ctx.send("Debug:", files=[discord.File(f"{folder}{out}.gif"), discord.File(f"{folder}trace.txt")])
     else:
         tree.render(0, 0, w, h, im, None)
 
@@ -204,7 +217,7 @@ async def portrait(ctx: commands.Context, portrait_name: str):
     debug = portrait_name.startswith("&DEBUG&")
 
     if debug:
-        portrait_name = portrait_name.removeprefix("&DEBUG")
+        portrait_name = portrait_name.removeprefix("&DEBUG&")
 
     portr = await resolve_portrait(ctx, portrait_name)
 

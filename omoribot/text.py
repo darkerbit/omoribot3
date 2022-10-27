@@ -260,4 +260,10 @@ class Text(Widget):
         return self.flow.get_size()
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
-        return self.flow.render(x, y, w, h, image, dbg)
+        if dbg is not None:
+            dbg.push()
+
+        self.flow.render(x, y, w, h, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()

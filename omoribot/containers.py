@@ -20,7 +20,13 @@ class FixedSize(Widget):
         return self.width, self.height
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if dbg is not None:
+            dbg.push()
+
         self.child.render(x, y, w, h, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()
 
 
 class Layer(Container):
@@ -63,7 +69,13 @@ class Box(Widget):
         draw.rectangle((x, y, x + w - 1, y + h - 1), fill=(0, 0, 0, 255))
         draw.rectangle((x + 1, y + 1, x + w - 2, y + h - 2), outline=(255, 255, 255, 255), width=3)
 
+        if dbg is not None:
+            dbg.push()
+
         self.child.render(x + 5, y + 5, w - 10, h - 10, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()
 
 
 class VStack(Container):
@@ -162,6 +174,9 @@ class HFlow(Widget):
         rx = x
         ry = y
 
+        if dbg is not None:
+            dbg.push()
+
         for line in self.lines:
             lh = 0
 
@@ -186,6 +201,9 @@ class HFlow(Widget):
             rx = x
             ry += lh + self.pad_y
 
+        if dbg is not None:
+            dbg.pop()
+
 
 class Margin(Widget):
     def __init__(self, child: Widget, left: int = 8, right: int = 8, top: int = 8, bottom: int = 8, **kwargs):
@@ -207,4 +225,10 @@ class Margin(Widget):
         return cw + self.left + self.right, ch + self.top + self.bottom
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if dbg is not None:
+            dbg.push()
+
         self.child.render(x + self.left, y + self.top, w - self.left - self.right, h - self.top - self.bottom, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()

@@ -21,6 +21,8 @@ class Widget:
 
     def render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         if dbg is not None:
+            dbg.emit_name(self.__class__.__name__)
+
             from .text import TextElement
 
             dbg_im = image.copy()
@@ -56,6 +58,9 @@ class Widget:
             draw.text((x, y), f"{x} {y}\n{w} {h}\n{self.w} {self.h}", fill=(255, 255, 255, 255), stroke_fill=(0, 0, 0, 255), stroke_width=1, font=font, anchor="la")
             dbg.emit_frame(dbg_im)
 
+        self._render_bodge(x, y, w, h, image, dbg)
+
+    def _render_bodge(self, x, y, w, h, image, dbg):
         self._render(x, y, w, h, image, dbg)
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
@@ -90,6 +95,15 @@ class Container(Widget):
 
     def _get_size(self) -> tuple[int, int]:
         raise NotImplementedError
+
+    def _render_bodge(self, x, y, w, h, image, dbg):
+        if dbg is not None:
+            dbg.push()
+
+        self._render(x, y, w, h, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()
 
     def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
         raise NotImplementedError
