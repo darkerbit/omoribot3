@@ -232,3 +232,27 @@ class Margin(Widget):
 
         if dbg is not None:
             dbg.pop()
+
+
+class HCenter(Widget):
+    def __init__(self, child: Widget, **kwargs):
+        super().__init__(**kwargs)
+
+        self.child = child
+
+    def anim_done(self) -> bool:
+        return self.child.anim_done()
+
+    def _get_size(self) -> tuple[int, int]:
+        return self.child.get_size()
+
+    def _render(self, x: int, y: int, w: int, h: int, image: Image, dbg):
+        if dbg is not None:
+            dbg.push()
+
+        cw = self.child.get_size()[0]
+
+        self.child.render(int(x + (w - x) / 2 - cw / 2), y, cw, h, image, dbg)
+
+        if dbg is not None:
+            dbg.pop()

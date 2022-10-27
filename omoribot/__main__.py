@@ -109,7 +109,7 @@ async def download_attachment(ctx: commands.Context, prefix: str = "portrait"):
         os.makedirs(folder)
 
     if len(ctx.message.attachments) < 1:
-        await ctx.reply("you forgor attachment")
+        await ctx.reply(f"You forgot to attach the {prefix}")
         return
 
     attachment = ctx.message.attachments.pop()
@@ -158,6 +158,14 @@ async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str,
 
     if debug:
         message = message.removeprefix("&DEBUG&")
+
+    bg_class = None
+    if message.startswith("&BACKGROUND&"):
+        bg_class = Background
+        message = message.removeprefix("&BACKGROUND&")
+    elif message.startswith("&BACKGROUND NO RESIZE&"):
+        bg_class = ImageWidget
+        message = message.removeprefix("&BACKGROUND NO RESIZE&")
 
     stack = VStack()
 
@@ -209,6 +217,14 @@ async def generate_textbox(ctx: commands.Context, name: str, portrait_name: str,
 
     stack.add_child(FixedSize(608, 112, Box(dialogue)))
 
+    if bg_class is not None:
+        bg = await download_attachment(ctx, "background")
+
+        if bg is None:
+            return
+
+        stack = Layer(bg_class(bg), HCenter(Margin(stack, left=0, right=0, top=0, bottom=8, vertical=1)))
+
     await generate(ctx, debug, stack)
 
 
@@ -228,7 +244,7 @@ async def portrait(ctx: commands.Context, portrait_name: str):
 
 
 async def do_frame(ctx: commands.Context, debug: bool):
-    im = await download_attachment(ctx, "background")
+    im = await download_attachment(ctx, "image")
 
     if im is None:
         return

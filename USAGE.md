@@ -63,6 +63,7 @@ All of these extra commands support `&DEBUG&` also.
 - `?portrait`: Displays just the given portrait framed in a box.
 - `?text`: Displays just the given text framed in a box. Same settings as the character name.
 - `?guide_header`: Generates one of the headers used in the Discord version of the Usage Guide. Deletes your invocation.
+- `?frame`: Displays just the attached image framed in a box, without resizing it. (`?frame_debug` runs it in debug mode since there's nothing to add `&DEBUG&` to)
 
 ## CHOICERS
 
@@ -75,3 +76,11 @@ where `<choices>` is a `;`-separated list of choices. For example, in order to c
 To add an arrow to one of the choices (by default there's no arrows which looks a bit odd), you can simply add `->` before the choice you want. So if you wanted `YES` to be selected by default in the above example, you could use `->YES;NO`, or if you wanted `NO` to be selected, you could use `YES;->NO`.
 
 There is no limit to the amount of choices, and every choice supports the formatting tags above.
+
+## BACKGROUNDS
+
+You can attach a background image to `?tb` and `?ch` by adding `&BACKGROUND&` to the start of the message, and then attaching an image file.
+
+By default, this resizes it to 640 by 480 (the default resolution of OMORI and the one the textboxes are designed for), but you can prevent this by using `&BACKGROUND NO RESIZE&` instead.
+
+If you also have an attached portrait, the first attachment will be the background and the second the portrait.

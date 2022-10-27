@@ -65,6 +65,11 @@ class ImageWidget(Portrait):
         self.portrait = self.raw_portrait.convert("RGBA")
 
 
+class Background(Portrait):
+    def recrop(self):
+        self.portrait = self.raw_portrait.convert("RGBA").resize((640, 480))
+
+
 class Arrow(Widget):
     arrow = Image.open("assets/arrow.png").convert("RGBA")
 
