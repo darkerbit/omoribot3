@@ -8,6 +8,8 @@ A discord bot for creating OMORI-styled text boxes.
 
 First, install Poetry by [following the instructions in the official documentation](https://python-poetry.org/docs/#installing-with-the-official-installer).
 
+Second, make sure `ffmpeg` is installed. If you're on Linux, it should just be a matter of `apt install ffmpeg` or `dnf install ffmpeg` or similar.
+
 1. Place bot token into `token` next to `main.py` (Message content intent required)
 2. Place dialogue portraits into `portraits/`
 3. `poetry install`
