@@ -11,7 +11,7 @@ First, install Poetry by [following the instructions in the official documentati
 1. Place bot token into `token` next to `main.py` (Message content intent required)
 2. Place dialogue portraits into `portraits/`
 3. `poetry install`
-4. `poetry run python3 -m omoribot` (pass in `local` to use `!` as the prefix, meant for debugging)
+4. `poetry run omoribot` (pass in `local` to use `!` as the prefix, meant for debugging)
 
 ### How do use?
 

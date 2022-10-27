@@ -257,7 +257,7 @@ async def choicer(ctx: commands.Context, name: str, portrait_name: str, choices:
     await generate_textbox(ctx, name, portrait_name, choices, message)
 
 
-if __name__ == '__main__':
+def main():
     if not os.path.exists("out/"):
         os.makedirs("out/")
 
@@ -274,3 +274,7 @@ if __name__ == '__main__':
         token = f.read().strip()
 
     bot.run(token)
+
+
+if __name__ == '__main__':
+    main()
