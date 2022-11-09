@@ -62,32 +62,36 @@ async def render(tree: Widget, out, ctx, debug):
     else:
         tree.render(0, 0, w, h, im, None)
 
-    append = []
+    anim_frame = 0
     rendering = None
 
     if not tree.anim_done():
         rendering = await ctx.reply("Rendering...")
 
     while not tree.anim_done():
+        folder = f"outgifs/{out}/"
+
         frame = Image.new("RGBA", im.size)
         tree.render(0, 0, w, h, frame, None)
-        append.append(frame)
+        frame.save(f"{folder}{str(anim_frame + 1).zfill(5)}.png")
 
-    if len(append) > 0:
+        if anim_frame % 100 == 0:
+            await rendering.edit(content=f"Rendering frame {anim_frame}")
+
+        anim_frame += 1
+
+    if anim_frame > 0:
         # Pillow's GIF saving does not work correctly so I have to do this shit
         folder = f"outgifs/{out}/"
 
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
+        # This block of code cost me an entire render
+        # if os.path.exists(folder):
+        #     shutil.rmtree(folder)
 
-        os.makedirs(folder)
+        # os.makedirs(folder)
 
         # Save first frame
         im.save(f"{folder}00000.png")
-
-        # Save remaining frames
-        for i in range(len(append)):
-            append[i].save(f"{folder}{str(i + 1).zfill(5)}.png")
 
         # Run ffmpeg
         subprocess.run(f'ffmpeg -framerate 30 -i {folder}%05d.png -vf "fps=30,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 {folder}{out}.gif',
@@ -303,6 +307,11 @@ async def textbox(ctx: commands.Context, name: str, portrait_name: str, *, messa
 @bot.command(aliases=["ch"])
 async def choicer(ctx: commands.Context, name: str, portrait_name: str, choices: str, *, message: str):
     await generate_textbox(ctx, name, portrait_name, choices, message)
+
+
+@bot.command()
+async def bad_apple(ctx: commands.Context):
+    await ctx.reply(file=discord.File(await render(Box(BadApplePlayer()), ctx.author.id, ctx, False)))
 
 
 def main():
