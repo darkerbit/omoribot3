@@ -315,6 +315,25 @@ async def undertale(ctx: commands.Context, *, message: str):
     await generate(ctx, debug, FixedSize(289, 76, UndertaleBox(UndertaleText(message))))
 
 
+async def make_portrait(ctx: commands.Context, portr: str):
+    return HStack(Box(Portrait(await resolve_portrait(ctx, portr))), Box(Margin(Text(portr, can_newline=False), top=0, bottom=8, left=7, right=8), vertical=1))
+
+
+@bot.command()
+async def portrait_list(ctx: commands.Context, search: str, name: str, subtitle: str):
+    await ctx.message.delete()
+
+    portraits = os.listdir("portraits")
+    portraits.sort()
+
+    portraits = [x.removesuffix(".png") for x in portraits if x.startswith(search)]
+
+    await ctx.send(file=discord.File(await render(Box(Margin(Text(f"[size=80]{name}[/]\n[size=48][color=gray]{subtitle}[/][/]", can_newline=False), top=0, bottom=11, left=14, right=16)), ctx.author.id, ctx, False)))
+
+    for portrait in portraits:
+        await ctx.send(file=discord.File(await render(await make_portrait(ctx, portrait), portrait + str(ctx.author.id), ctx, False)))
+
+
 def main():
     if not os.path.exists("out/"):
         os.makedirs("out/")
