@@ -83,3 +83,11 @@ You can attach a background image to `?tb` and `?ch` by adding `&BACKGROUND&` to
 By default, this resizes it to 640 by 480 (the default resolution of OMORI and the one the textboxes are designed for), but you can prevent this by using `&BACKGROUND NO RESIZE&` instead.
 
 If you also have an attached portrait, the first attachment will be the background and the second the portrait.
+
+## UNDERTALE TEXTBOXES
+
+You can create an UNDERTALE-styled textbox using the following command:
+
+`?ut <message>`
+
+UNDERTALE textboxes do not yet support format tags or portraits. This will be fixed later.
