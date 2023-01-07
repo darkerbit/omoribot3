@@ -36,7 +36,6 @@ Available fonts:
 
 - `omori`, `default`, `def`, `normal`: The default font. You probably don't need to set this manually since you can just end the previous font tag with `[/]`.
 - `alt`, `alternate`, `other`: The other font in OMORI, used by Stranger for example.
-- `undertale`, `ut`, `deltarune`, `dr`: The UNDERTALE/DELTARUNE font.
 - `emoji`: Twitter's and Discord's emoji font. You can use this font to mix in emoji in the middle of your message.
 - `jp`, `japanese`: Japanese font.
 - `kr`, `korean`: Korean font. Mostly incomplete.

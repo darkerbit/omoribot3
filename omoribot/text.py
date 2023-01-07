@@ -11,7 +11,6 @@ from PIL import ImageFont, ImageDraw, ImageColor
 class TextElement(Widget):
     font_omori = "fonts/OMORI_GAME2.ttf"
     font_alt = "fonts/OMORI_GAME.ttf"
-    font_undertale = "fonts/DTM-Mono.otf"
     font_emoji = "fonts/TwitterColorEmoji-SVGinOT.ttf"
     font_japanese = "fonts/HuiFontP29.ttf"
     font_korean = "fonts/YoonDesignWebDotum_KRfont.ttf"
@@ -26,11 +25,6 @@ class TextElement(Widget):
         "alt": font_alt,
         "alternate": font_alt,
         "other": font_alt,
-
-        "undertale": font_undertale,
-        "ut": font_undertale,
-        "deltarune": font_undertale,
-        "dr": font_undertale,
 
         "emoji": font_emoji,
 

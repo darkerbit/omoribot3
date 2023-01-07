@@ -305,6 +305,16 @@ async def choicer(ctx: commands.Context, name: str, portrait_name: str, choices:
     await generate_textbox(ctx, name, portrait_name, choices, message)
 
 
+@bot.command(aliases=["ut"])
+async def undertale(ctx: commands.Context, *, message: str):
+    debug = message.startswith("&DEBUG&")
+
+    if debug:
+        message = message.removeprefix("&DEBUG&")
+
+    await generate(ctx, debug, FixedSize(289, 76, UndertaleBox(UndertaleText(message))))
+
+
 def main():
     if not os.path.exists("out/"):
         os.makedirs("out/")
