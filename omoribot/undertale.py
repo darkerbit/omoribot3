@@ -99,8 +99,6 @@ class UndertalePortrait(Widget):
 
         self.raw_portrait = Image.open(portrait)
 
-        self.raw_portrait = self.raw_portrait.resize((self.raw_portrait.width * 2, self.raw_portrait.height * 2), Image.NEAREST)
-
         self.i = 0
         self.last = 0
 
@@ -120,6 +118,6 @@ class UndertalePortrait(Widget):
 
         (cw, ch) = self.raw_portrait.size
 
-        image.alpha_composite(self.raw_portrait, dest=(int(x + (w - cw) / 2), int(y + (h - ch) / 2)))
+        image.alpha_composite(self.raw_portrait.convert("RGBA").resize((self.raw_portrait.width * 2, self.raw_portrait.height * 2), Image.NEAREST), dest=(int(x + (w - cw) / 2), int(y + (h - ch) / 2)))
 
         self.i += 1
