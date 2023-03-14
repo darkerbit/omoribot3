@@ -132,7 +132,7 @@ class HStack(Container):
 
         for c in self.children:
             cw = c.get_size()[0]
-            c.render(cx, y, cw, h, image, dbg)
+            c.render(cx, y, min(cw, w - cx), h, image, dbg)
             cx += cw + self.padding
 
 

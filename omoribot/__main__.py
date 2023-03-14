@@ -306,13 +306,18 @@ async def choicer(ctx: commands.Context, name: str, portrait_name: str, choices:
 
 
 @bot.command(aliases=["ut"])
-async def undertale(ctx: commands.Context, *, message: str):
+async def undertale(ctx: commands.Context, portr: str, *, message: str):
     debug = message.startswith("&DEBUG&")
 
     if debug:
         message = message.removeprefix("&DEBUG&")
 
-    await generate(ctx, debug, FixedSize(289, 76, UndertaleBox(UndertaleText(message))))
+    text = UndertaleText(message)
+
+    if portr != "none":
+        text = HStack(FixedSize(55 * 2, 0, Margin(UndertalePortrait(await resolve_portrait(ctx, portr)), top=2 * 2, bottom=2 * 2, left=13 * 2, right=-5 * 2)), text)
+
+    await generate(ctx, debug, FixedSize(289 * 2, 76 * 2, UndertaleBox(text)))
 
 
 async def make_portrait(ctx: commands.Context, portr: str):
@@ -332,6 +337,18 @@ async def portrait_list(ctx: commands.Context, search: str, name: str, subtitle:
 
     for portrait in portraits:
         await ctx.send(file=discord.File(await render(await make_portrait(ctx, portrait), portrait + str(ctx.author.id), ctx, False)))
+
+
+@bot.command()
+async def portrait_list_undertale(ctx: commands.Context):
+    await ctx.message.delete()
+
+    portraits = os.listdir("portraits")
+    portraits.sort()
+    portraits = [x.removesuffix(".png") for x in portraits if x.startswith("spr")]
+
+    for portrait in portraits:
+        await ctx.send(portrait, file=discord.File(await resolve_portrait(ctx, portrait)))
 
 
 def main():

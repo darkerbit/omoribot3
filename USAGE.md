@@ -88,6 +88,8 @@ If you also have an attached portrait, the first attachment will be the backgrou
 
 You can create an UNDERTALE-styled textbox using the following command:
 
-`?ut <message>`
+`?ut <portrait name> <message>`
 
-UNDERTALE textboxes do not yet support format tags or portraits. This will be fixed later.
+As with the regular textbox command, you can supply "none" for the portrait name to not have one.
+
+UNDERTALE textboxes do not yet support format tags.
