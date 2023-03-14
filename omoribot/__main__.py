@@ -315,7 +315,7 @@ async def undertale(ctx: commands.Context, portr: str, *, message: str):
     text = UndertaleText(message)
 
     if portr != "none":
-        text = HStack(FixedSize(55 * 2, 0, Margin(UndertalePortrait(await resolve_portrait(ctx, portr)), top=2 * 2, bottom=2 * 2, left=13 * 2, right=-5 * 2)), text)
+        text = HStack(FixedSize(55 * 2, 0, Margin(UndertalePortrait(await resolve_portrait(ctx, portr)), top=2 * 2, bottom=2 * 2, left=13 * 2, right=-5 * 2)), text, undertale=True)
 
     await generate(ctx, debug, FixedSize(289 * 2, 76 * 2, UndertaleBox(text)))
 

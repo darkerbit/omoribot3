@@ -108,10 +108,13 @@ class VStack(Container):
 
 
 class HStack(Container):
-    def __init__(self, *args, padding: int = 4, **kwargs):
+    def __init__(self, *args, padding: int = 4, undertale: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.padding = padding
+
+        # Terrible hack because I apparently broke OMORI's textboxes via my bugfix later
+        self.undertale = undertale
 
     def _get_size(self) -> tuple[int, int]:
         w = (len(self.children) - 1) * self.padding
@@ -132,7 +135,7 @@ class HStack(Container):
 
         for c in self.children:
             cw = c.get_size()[0]
-            c.render(cx, y, min(cw, w - cx), h, image, dbg)
+            c.render(cx, y, min(cw, w - cx) if self.undertale else cw, h, image, dbg)
             cx += cw + self.padding
 
 
